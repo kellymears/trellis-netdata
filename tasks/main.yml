@@ -1,0 +1,11 @@
+- name: Install Netdata
+  shell: |
+    <(curl -Ss https://my-netdata.io/kickstart.sh)
+  args:
+    executable: /bin/bash
+    warn: no
+
+- name: Configure Netdata notifications
+  template:
+    src: alarm-notify.sh.j2
+    dest: /opt/netdata/usr/libexec/netdata/plugins.d/alarm-notify.sh
