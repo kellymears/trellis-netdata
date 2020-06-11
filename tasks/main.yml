@@ -1,6 +1,6 @@
 - name: Install Netdata
   shell: |
-    <(curl -Ss https://my-netdata.io/kickstart.sh)
+    bash <(curl -Ss https://my-netdata.io/kickstart.sh) --dont-wait
   args:
     executable: /bin/bash
     warn: no
