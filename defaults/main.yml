@@ -1,4 +1,19 @@
-netdata_curl_options: ""
+# Uninstall netdata
+netdata_uninstall: false
+
+# Install netdata
+netdata_install: true
+
+# Basic auth
+netdata_user:
+netdata_password:
+
+# SSL
+netdata_api_key:
+netdata_ssl_cert:
+netdata_ssl_key:
+
+# Notifications
 netdata_use_fqdn: "NO"
 netdata_slack_webhook_url:
 netdata_msteam_webhook_url:
@@ -28,7 +43,8 @@ netdata_syslog_facility:
 netdata_email_sender:
 netdata_email_threading:
 netdata_email_plaintext_only:
+netdata_email_charset: "UTF-8"
 netdata_irc_nickname:
 netdata_irc_realname:
 netdata_irc_network:
-netdata_email_charset: "UTF-8"
+netdata_curl_options:

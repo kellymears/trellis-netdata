@@ -1,11 +1,6 @@
-- name: Install Netdata
-  shell: |
-    bash <(curl -Ss https://my-netdata.io/kickstart.sh) --dont-wait
-  args:
-    executable: /bin/bash
-    warn: no
+---
+- import_tasks: netdata.yml
+  tags: netdata-install
 
-- name: Configure Netdata notifications
-  template:
-    src: alarm-notify.sh.j2
-    dest: /opt/netdata/usr/libexec/netdata/plugins.d/alarm-notify.sh
+- import_tasks: nginx.yml
+  tags: netdata-setup-nginx

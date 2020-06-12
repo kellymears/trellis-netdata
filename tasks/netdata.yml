@@ -1,0 +1,32 @@
+---
+- name: Ensure Netdata is installed
+  command: netdata -v
+  register: netdata_installed | bool
+  failed_when: no
+
+- name: Uninstall Netdata
+  shell: |
+    /usr/libexec/netdata/netdata-uninstaller.sh --yes --env /etc/netdata/.environment
+  args:
+    executable: /bin/bash
+  when: netdata_reinstall
+  register: netdata_uninstalled | bool
+
+- name: Install Netdata
+  shell: |
+    bash <(curl -Ss https://my-netdata.io/kickstart.sh) --dont-wait
+  args:
+    executable: /bin/bash
+  when: netdata_installed is false
+
+- name: Configure Netdata notifications
+  template:
+    src: alarm-notify.sh.j2
+    dest: /opt/netdata/usr/libexec/netdata/plugins.d/alarm-notify.sh
+
+- name: Configure Netdata API key
+  command: "echo {{ netdata_api_key }} > /opt/netdata/var/lib/netdata/netdata.api.key"
+  when: netdata_api_key is defined
+
+- name: Restart Netdata
+  command: service netdata restart

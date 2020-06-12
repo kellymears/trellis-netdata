@@ -1,0 +1,9 @@
+---
+  - name: "Create netdata access credentials"
+    shell: printf "{{ netdata_user }}:$(openssl passwd {{ netdata_password }} -apr1)" > {{ nginx_path }}/netdata.auth
+    when:
+      - netdata_user is defined
+      - netdata_password is defined
+
+  - name: "Restart nginx"
+    command: service nginx restart

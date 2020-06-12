@@ -4,19 +4,64 @@ This Ansible role installs Netdata. It was written to be used with [Trellis](htt
 
 Now you can monitor your Trellis deploy(s) from a browser or Discord. That's cool.
 
-I'll pkg on ansible-galaxy when it's finished but for now you'll need to clone this repo into `roles/netdata` manually.
+I'll pkg on ansible-galaxy when it's finished.
 
-Then add the following child definition to whatever `wordpress_sites` entry you'd like to enable Netdata on:
+## Install
+
+First, you'll need to clone this repo into `roles/netdata`.
+
+Next, add the following to your `wordpress_sites` definition on whatever site you would like to enable netdata access on. You can add it to multiple sites but there is no point if they share a server.
+
+This addition supplies a child nginx template that serves the dashboard on requests to `/netdata`.
 
 ```yml
-nginx_wordpress_site_conf: roles/netdata/templates/netdata.conf.child
+# wordpress_sites.yml
+
+wordpress_sites:
+  example_site:
+    nginx_wordpress_site_conf: roles/netdata/templates/netdata-nginx.conf.child
 ```
 
-Optionally you can also configure how you'd like to recieve notifications. Check the defaults to see what's available.
+Add the netdata role to `server.yml`. I think it makes sense right after nginx.
 
 ```yml
-netdata_curl_options: ""
-netdata_use_fqdn: "NO"
+# server.yml
+
+    # ...
+    - { role: netdata, tags: [netdata, nginx] }
+    # ...
+```
+
+## Basic auth (optional)
+
+The netdata dashboard is read-only and exposes nothing that is explicitly secret. Stil, you may wish to limit its availability.
+
+Add the following variables into the target `main.yml` to password protect `/netdata`.
+
+```yml
+# main.yml
+
+netdata_user: admin
+netdata_password: generate_me
+```
+
+## API auth (optional)
+
+Netdata exposes a pretty nice API. You can lock it down if you're worried about security.
+
+```yml
+# main.yml
+
+netdata_api_key: generate_me
+```
+
+## Notification services (optional)
+
+Netdata supports a ton of alerting/pager services and team workplace apps, etc.
+
+```yml
+# main.yml
+
 netdata_slack_webhook_url:
 netdata_msteam_webhook_url:
 netdata_rocketchat_webhook_url:
@@ -48,11 +93,4 @@ netdata_email_plaintext_only:
 netdata_irc_nickname:
 netdata_irc_realname:
 netdata_irc_network:
-netdata_email_charset: "UTF-8"
 ```
-
-Consult the Netdata docs if something is unclear about that. I'm just passing the values along.
-
-If all went smoothly, your dashboard should be available at `yourhostname.com/netdata`.
-
-I'll surface more netdata options soon. Notifications was most important for my use case, right now.
